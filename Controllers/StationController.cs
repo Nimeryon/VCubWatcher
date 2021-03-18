@@ -14,17 +14,24 @@ namespace VCubWatcher.Controllers
         // GET: Site
         public ActionResult Carte()
         {
+            ViewData["Stations"] = GetStations();
+
             return View();
         }
         public ActionResult Liste()
+        {
+            ViewData["Stations"] = GetStations();
+
+            return View();
+        }
+
+        public static List<Station> GetStations()
         {
             String url = "https://api.alexandredubois.com/vcub-backend/vcub.php";
             String json = new WebClient().DownloadString(url);
 
             List<Station> stations = JsonConvert.DeserializeObject<List<Station>>(json);
-            ViewData["Stations"] = stations;
-
-            return View();
+            return stations;
         }
     }
 }
