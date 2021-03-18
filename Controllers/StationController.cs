@@ -21,9 +21,10 @@ namespace VCubWatcher.Controllers
             String url = "https://api.alexandredubois.com/vcub-backend/vcub.php";
             String json = new WebClient().DownloadString(url);
 
-            Station[] stations = JsonConvert.DeserializeObject<Station[]>(json);
+            List<Station> stations = JsonConvert.DeserializeObject<List<Station>>(json);
+            ViewData["Stations"] = stations;
 
-            return View(stations);
+            return View();
         }
     }
 }
