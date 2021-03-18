@@ -15,8 +15,10 @@
     {
         <li class="list-group-item">
             <div class="card">
+                <h4 class="card-header"><u>@station.Id - @station.Name</u></h4>
                 <div class="card-body">
-                    <h5 class="card-title">@station.Name</h5>
+                    <p class="list-group-item">Nombre de vélos électriques: @station.ElectricBikeCount</p>
+                    <p class="list-group-item">Nombre de vélos : @station.BikeCount / @station.BikeCountTotal</p>
                 </div>
             </div>
         </li>
