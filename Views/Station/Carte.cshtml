@@ -3,7 +3,7 @@
 @{
     ViewBag.Title = "Carte";
 
-    var stations = ViewData["Stations"] as List<Station>;
+    var stations = ViewData["Stations"] as string;
 }
 
 <head>
@@ -30,6 +30,12 @@
             minZoom: 1,
             maxZoom: 20
         }).addTo(macarte);
+        
+        var stations = JSON.parse('@stations'.replace(/&quot;/g,'"'));
+        console.log(stations);
+        stations.forEach((station) => {
+            L.marker([station.latitude, station.longitude]).addTo(macarte);
+        });
     }
 
     function localSucess(position) {

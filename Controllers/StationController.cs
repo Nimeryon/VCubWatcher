@@ -14,7 +14,7 @@ namespace VCubWatcher.Controllers
         // GET: Site
         public ActionResult Carte()
         {
-            ViewData["Stations"] = GetStations();
+            ViewData["Stations"] = JsonConvert.SerializeObject(GetStations());
 
             return View();
         }
