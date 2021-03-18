@@ -34,7 +34,13 @@
         var stations = JSON.parse('@stations'.replace(/&quot;/g,'"'));
         console.log(stations);
         stations.forEach((station) => {
-            L.marker([station.latitude, station.longitude]).addTo(macarte);
+            var marker = L.marker([station.latitude, station.longitude]).addTo(macarte);
+            marker.bindPopup(`<div class="card">
+                <h4 class="card-header"><u>${station.name}</u></h4>
+                <div class="card-body">
+                    <p class="list-group-item">Nombre de vélos disponible : ${station.slot_count}</p>
+                </div>
+            </div>`);
         });
     }
 
