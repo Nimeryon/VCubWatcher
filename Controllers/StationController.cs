@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
+using System.Net.WebSockets;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using VCubWatcher.Models;
@@ -13,19 +15,65 @@ namespace VCubWatcher.Controllers
     {
         public IActionResult Liste()
         {
-            ViewData["Stations"] = GetStations();
+            ViewData["favoriteIds"] = GetCookie("favoriteIds");
             return View();
         }
 
         public IActionResult Carte()
         {
-            ViewData["Stations"] = JsonConvert.SerializeObject(GetStations());
-            return View();
+            var stations = JsonConvert.SerializeObject(GetStations());
+            return View(stations);
         }
 
-        public IActionResult HandleButtonClick(string name)
+        public IActionResult HandleButtonClick(string fav)
         {
-            return Ok();
+            SetFavorites(fav);
+
+            ViewData["favoriteIds"] = GetCookie("favoriteIds");
+            return RedirectToActionPermanent("Liste");
+        }
+
+        public void SetFavorites(string fav)
+        {
+            string favoriteIdsString = GetCookie("favoriteIds");
+            if (favoriteIdsString != null)
+            {
+                string[] favoriteIds = favoriteIdsString.Split(",");
+                if (Array.IndexOf(favoriteIds, fav) == -1)
+                {
+                    List<string> favoriteList = favoriteIds.ToList();
+                    favoriteList.Add(fav);
+                    SetCookie("favoriteIds", String.Join(",", favoriteList), Int32.MaxValue);
+                }
+                else
+                {
+                    List<string> favoriteList = favoriteIds.ToList();
+                    favoriteList.Remove(fav);
+                    SetCookie("favoriteIds", String.Join(",", favoriteList), Int32.MaxValue);
+                }
+            }
+            else
+            {
+                SetCookie("favoriteIds", fav, Int32.MaxValue);
+            }
+        }
+
+        public string? GetCookie(string key)
+        {
+            string request = Request.Cookies[key];
+            return request;
+        }
+
+        public void SetCookie(string key, string value, int? expireTime)
+        {
+            CookieOptions option = new CookieOptions();
+
+            if (expireTime.HasValue)
+                option.Expires = DateTime.Now.AddMinutes(expireTime.Value);
+            else
+                option.Expires = DateTime.Now.AddMilliseconds(10);
+
+            Response.Cookies.Append(key, value, option);
         }
 
         public static List<StationModel> GetStations()
