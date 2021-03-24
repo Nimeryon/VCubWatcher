@@ -1,7 +1,53 @@
-﻿
+﻿@using VCubWatcher.Controllers
+
 @{
     ViewData["Title"] = "Favoris";
+
+    var favoriteIds = ViewData["favoriteIds"] as string;
+    string[] favoriteIdsList = favoriteIds == null ? new string[0] : favoriteIds.Split(",");
+
+    var stations = StationController.GetStations();
+    stations.Sort((s1, s2) => s1.Name.CompareTo(s2.Name));
 }
 
-<h1>Favoris</h1>
 
+<head>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+</head>
+
+<h2>Favoris</h2>
+
+<ul class="list-group">
+    @{if (favoriteIdsList.Length > 0)
+      {
+          foreach (var station in stations)
+          {
+              if (Array.IndexOf(favoriteIdsList, station.Id.ToString()) != -1)
+              {
+                  @using (Html.BeginForm("HandleButtonClickFavoris", "User"))
+                  {
+                      <li class="list-group-item">
+                          <div class="card">
+                              <div class="card-header d-flex justify-content-between w-100">
+                                  <h4><u>@station.Id - @station.Name</u></h4>
+                                  <button class="btn" name="fav" value="@station.Id"><i class="fas fa-heart"></i></button>
+                              </div>
+                              <div class="card-body">
+                                  <p class="list-group-item">Nombre de vélos électriques: @station.ElectricBikeCount</p>
+                                  <p class="list-group-item">Nombre de vélos total : @station.BikeCountTotal</p>
+                                  <p class="list-group-item">Emplacement libre : @station.SlotCount</p>
+                              </div>
+                          </div>
+                      </li>
+                  }
+              }
+          }
+      }
+      else
+      {
+        <li class="list-group-item">
+            <p>Aucun favoris</p>
+        </li>
+      }
+    }
+</ul>

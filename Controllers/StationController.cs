@@ -18,19 +18,23 @@ namespace VCubWatcher.Controllers
             ViewData["favoriteIds"] = GetCookie("favoriteIds");
             return View();
         }
+        public IActionResult HandleButtonClickListe(string fav)
+        {
+            SetFavorites(fav);
+            return RedirectToActionPermanent("Liste");
+        }
 
         public IActionResult Carte()
         {
-            var stations = JsonConvert.SerializeObject(GetStations());
-            return View(stations);
+            ViewData["Stations"] = JsonConvert.SerializeObject(GetStations());
+            ViewData["favoriteIds"] = JsonConvert.SerializeObject(GetCookie("favoriteIds"));
+            return View();
         }
 
-        public IActionResult HandleButtonClick(string fav)
+        public IActionResult HandleButtonClickCarte(string fav)
         {
             SetFavorites(fav);
-
-            ViewData["favoriteIds"] = GetCookie("favoriteIds");
-            return RedirectToActionPermanent("Liste");
+            return RedirectToActionPermanent("Carte");
         }
 
         public void SetFavorites(string fav)
@@ -78,11 +82,19 @@ namespace VCubWatcher.Controllers
 
         public static List<StationModel> GetStations()
         {
-            String url = "https://api.alexandredubois.com/vcub-backend/vcub.php";
-            String json = new WebClient().DownloadString(url);
+            try
+            {
+                String url = "https://api.alexandredubois.com/vcub-backend/vcub.php";
+                String json = new WebClient().DownloadString(url);
 
-            List<StationModel> stations = JsonConvert.DeserializeObject<List<StationModel>>(json);
-            return stations;
+                List<StationModel> stations = JsonConvert.DeserializeObject<List<StationModel>>(json);
+                return stations;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
     }
 }
